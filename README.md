@@ -100,5 +100,5 @@ The Digital Treasure Hunt platform has extensive potential for growth and evolut
 
 ### Preview
 
-<img src="https://htmlpreview.github.io/?https://github.com/Dark-97o/Treasure_hunt_fs/blob/main/index.html">
+`https://htmlpreview.github.io/?https://github.com/Dark-97o/Treasure_hunt_fs/blob/main/index.html`
 
