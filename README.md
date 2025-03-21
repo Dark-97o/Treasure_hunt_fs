@@ -98,3 +98,7 @@ The Digital Treasure Hunt platform has extensive potential for growth and evolut
 
 ![image](https://github.com/user-attachments/assets/f1a9120f-99b7-4a7c-9a01-3c00734f34dc)
 
+### Preview
+
+https://htmlpreview.github.io/
+
