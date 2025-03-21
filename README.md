@@ -24,6 +24,10 @@ The smart contract manages the entire treasure hunt lifecycle, including:
 
 Built on the Ethereum blockchain using the ERC-721 standard, this project combines cryptographic security with collectible digital assets, creating a gamified experience that offers both entertainment and potential value to participants.
 
+### Preview
+
+https://htmlpreview.github.io/?https://github.com/Dark-97o/Treasure_hunt_fs/blob/main/index.html
+
 ## Project Vision
 
 Our vision is to revolutionize traditional scavenger hunts by bringing them into the digital age through blockchain technology. We aim to create immersive, interactive experiences that:
@@ -98,7 +102,4 @@ The Digital Treasure Hunt platform has extensive potential for growth and evolut
 
 ![image](https://github.com/user-attachments/assets/f1a9120f-99b7-4a7c-9a01-3c00734f34dc)
 
-### Preview
-
-`https://htmlpreview.github.io/?https://github.com/Dark-97o/Treasure_hunt_fs/blob/main/index.html`
 
