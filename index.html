@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Treasure Hunt</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script type="module" src="js/config.js"></script>
+    <script type="module" src="js/contract.js"></script>
+    <script type="module" src="js/ui.js"></script>
+    <script type="module" src="js/wallet.js"></script>
+    <script type="module" src="js/app.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Background Elements -->
+        <div class="bg-elements">
+            <div class="treasure-map"></div>
+            <div class="floating-objects">
+                <i class="fas fa-compass floating-item"></i>
+                <i class="fas fa-map floating-item"></i>
+                <i class="fas fa-gem floating-item"></i>
+                <i class="fas fa-scroll floating-item"></i>
+                <i class="fas fa-key floating-item"></i>
+            </div>
+        </div>
+
+        <!-- Header Section -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-treasure-chest"></i>
+                <h1>Digital Treasure Hunt</h1>
+            </div>
+            <div class="connection-status">
+                <span id="network-name">Not Connected</span>
+                <button id="connect-wallet" class="btn-connect">Connect Wallet</button>
+                <div class="account-info hidden">
+                    <span id="account-address"></span>
+                    <span id="account-balance"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main>
+            <!-- Admin Panel - Only visible to contract owner -->
+            <section id="admin-panel" class="panel hidden">
+                <h2>Admin Panel <i class="fas fa-crown"></i></h2>
+                <div class="panel-content">
+                    <div class="admin-controls">
+                        <div class="hunt-management">
+                            <h3>Hunt Management</h3>
+                            <div class="hunt-status">
+                                <span>Current Status: </span>
+                                <span id="hunt-state" class="status-badge">Unknown</span>
+                            </div>
+                            <div class="button-group">
+                                <button id="start-hunt" class="btn primary-btn">Start Hunt</button>
+                                <button id="reset-hunt" class="btn danger-btn">Reset Hunt</button>
+                            </div>
+                        </div>
+                        
+                        <div class="clue-management">
+                            <h3>Clue Management</h3>
+                            <p id="total-clues">Total Clues: 0</p>
+                            <div class="add-clue-form">
+                                <div class="form-group">
+                                    <label for="clue-uri">Clue URI (IPFS):</label>
+                                    <input type="text" id="clue-uri" placeholder="ipfs://your-clue-content-uri">
+                                </div>
+                                <div class="form-group">
+                                    <label for="clue-answer">Clue Answer:</label>
+                                    <input type="text" id="clue-answer" placeholder="Answer to the clue">
+                                </div>
+                                <button id="add-clue" class="btn primary-btn">Add Clue</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ownership-management">
+                        <h3>Contract Management</h3>
+                        <div class="form-group">
+                            <label for="new-owner">Transfer Ownership:</label>
+                            <input type="text" id="new-owner" placeholder="New owner address">
+                            <button id="transfer-ownership" class="btn primary-btn">Transfer</button>
+                        </div>
+                        <div class="form-group">
+                            <button id="withdraw-funds" class="btn primary-btn">Withdraw Contract Funds</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Player Panel - Visible to participants -->
+            <section id="player-panel" class="panel">
+                <h2>Treasure Hunt <i class="fas fa-map-marked-alt"></i></h2>
+                <div class="panel-content">
+                    <!-- Hunt status display for players -->
+                    <div class="hunt-info">
+                        <div class="hunt-status-display">
+                            <span>Hunt Status: </span>
+                            <span id="player-hunt-state" class="status-badge">Inactive</span>
+                        </div>
+                        <div id="current-clue-display" class="hidden">
+                            <h3>Current Clue: <span id="current-clue-id">0</span> of <span id="player-total-clues">0</span></h3>
+                        </div>
+                    </div>
+                    
+                    <!-- Current clue content -->
+                    <div id="clue-content" class="clue-content hidden">
+                        <div class="clue-paper">
+                            <div class="parchment-texture">
+                                <h3>The Clue</h3>
+                                <div id="clue-text">
+                                    Loading clue...
+                                </div>
+                                <div class="clue-image-container">
+                                    <img id="clue-image" src="" alt="Clue Image" class="hidden">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="answer-form">
+                            <h3>Submit Your Answer</h3>
+                            <div class="form-group">
+                                <input type="text" id="player-answer" placeholder="Enter your answer">
+                                <button id="submit-answer" class="btn primary-btn">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Inactive hunt message -->
+                    <div id="inactive-hunt-message">
+                        <div class="message-box">
+                            <i class="fas fa-hourglass-half"></i>
+                            <h3>The hunt has not started yet</h3>
+                            <p>Check back later to participate in the treasure hunt!</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Completed hunt message (hidden initially) -->
+                    <div id="completed-hunt-message" class="hidden">
+                        <div class="message-box success">
+                            <i class="fas fa-trophy"></i>
+                            <h3>The hunt has been completed!</h3>
+                            <p>Congratulations to the winner!</p>
+                            <div id="winner-info" class="winner-info">
+                                <span>Winner: </span>
+                                <span id="winner-address">Unknown</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- NFT Gallery Section -->
+            <section id="nft-gallery" class="panel">
+                <h2>Your NFT Achievements <i class="fas fa-medal"></i></h2>
+                <div class="panel-content">
+                    <div class="gallery-controls">
+                        <h3>Your Collection</h3>
+                        <button id="refresh-gallery" class="btn primary-btn">
+                            <i class="fas fa-sync-alt"></i> Refresh Gallery
+                        </button>
+                    </div>
+                    
+                    <div class="nft-grid" id="nft-container">
+                        <!-- NFTs will be added here dynamically -->
+                        <div class="empty-gallery-message">
+                            <i class="fas fa-search"></i>
+                            <p>You don't have any achievement NFTs yet. Solve clues to earn them!</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Notifications Area -->
+        <div id="notification-container" class="notification-container"></div>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="loading-overlay hidden">
+            <div class="loader">
+                <i class="fas fa-compass fa-spin"></i>
+                <p id="loading-message">Loading...</p>
+            </div>
+        </div>
+
+        <!-- Modal System -->
+        <div id="modal-container" class="modal-container hidden">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-title">Modal Title</h3>
+                    <button class="modal-close"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="modal-body" class="modal-body">
+                    <!-- Modal content will be inserted here -->
+                </div>
+                <div class="modal-footer">
+                    <button id="modal-cancel" class="btn secondary-btn">Cancel</button>
+                    <button id="modal-confirm" class="btn primary-btn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="contract-info">
+            <span>Contract: </span>
+            <span id="contract-address">Not Connected</span>
+        </div>
+        <div class="app-info">
+            <p>Digital Treasure Hunt - NFT Treasure Hunt Game</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
